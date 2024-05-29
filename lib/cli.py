@@ -12,35 +12,6 @@ from helpers import (
     delete_client,
 
 )
-def create_client():
-    name = input("Enter name: ")
-    address = input("Enter address: ")
-    DOB = input("Enter DOB (YYYYMMDD): ")
-    id_number = input("Enter ID number: ")
-    email = input("Enter email: ")
-    income = input("Enter income: ")
-    education = input("Enter education: ")
-    credit_score = input("Enter credit score: ")
-
-    try:
-        client = Client(
-            name=name,
-            address=address,
-            DOB=int(DOB),
-            id_number=id_number,
-            email=email,
-            income=float(income),
-            education=education,
-            credit_score=int(credit_score)
-        )
-        print(f"Client created: {client}")
-    except ValueError as e:
-        print(f"Error creating client: {e}")
-
-def list_clients():
-    for client_id, client in Client.all_clients.items():
-        print(client)
-
 def show_menu():
     print("Welcome to Bank of Braavos")
     print("1. Create an account")
@@ -50,6 +21,37 @@ def show_menu():
 def main():
     while True:
         menu()
+        choice = input("> ")
+        if choice == "0":
+            exit_program()
+        elif choice == "1":
+            log_in_menu()
+        elif choice == "2":
+            add_menu()
+        else:
+            print("\nInvalid choice")
+
+def menu():
+    print("\nWelcome, weary travaler, to The Iron Bank of Braavos!")
+    print("Please select an option:")
+    print("0. Exit the program")
+    print("1. Log in to your account")
+    print("2. Register new account")
+
+
+def log_in_menu():
+    while True:
+        username = input("Input account number: ")
+        password = input("Input password: ")
+        choice = input("> ")
+        if choice == "0":
+            exit_program()  
+
+        
+                           
+def logged_in_menu():
+    while True:
+        logged_in_menu_options()
         choice = input("> ")
         if choice == "0":
             exit_program()
@@ -64,8 +66,9 @@ def main():
         else:
             print("\nInvalid choice")
 
-def menu():
-    print("\nWelcome, weary travaler, to The Iron Bank of Braavos!")
+        
+def logged_in_menu_options():
+    print("\nWelcome, respected client, to The Iron Bank of Braavos!")
     print("Please select an option:")
     print("0. Exit the program")
     print("1. Add/register an account")
