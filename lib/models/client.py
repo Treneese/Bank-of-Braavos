@@ -129,10 +129,32 @@ class Client:
             raise ValueError("Credit score must be between 300 and 850")
         self._credit_score = value
 
+    @property
+    def last_four(self):
+        if self._plain_ssn:
+            return self._plain_ssn[-4:]
+        return None
+    
+    @property
+    def ssn(self):
+        raise AttributeError("SSN is write-only")
+
+    @ssn.setter
+    def ssn(self, ssn):
+        self._hashed_ssn = self.hash_ssn_with_bcrypt(ssn)
+    
+    def verify_ssn(self, ssn):
+        return self.verify_ssn_with_bcrypt(ssn, self._hashed_ssn)
+
+    @staticmethod
     def hash_ssn_with_bcrypt(ssn):
         salt = bcrypt.gensalt()  # Automatically generates a salt
         hashed = bcrypt.hashpw(ssn.encode(), salt)
         return hashed
 
+    @staticmethod
     def verify_ssn_with_bcrypt(ssn, hashed_ssn):
-        return bcrypt.checkpw(ssn.encode(), hashed_ssn)
+        if bcrypt.checkpw(ssn.encode(), hashed_ssn):
+            print("It Matches!")
+        else:
+            print("It Does not Match :(")
