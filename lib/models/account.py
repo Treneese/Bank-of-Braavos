@@ -1,12 +1,13 @@
 # lib/models/account.py
+from typing import List, Union, Dict
 
 class Account:
 
     ALLOWED_ACCOUNT_TYPES = ["Saving", "Checking", "Business", "Credit"]
 
-    all = {}
+    all: Dict[int, "Account"] = {}
 
-    def __init__(self, account_number, routing_number, account_type, balance, payment_history, client):
+    def __init__(self, account_number: int, routing_number: int, account_type: str, balance: Union[int, float], payment_history: List[Dict], client: Client):
         self.account_number = account_number
         self.routing_number = routing_number
         self.account_type = account_type
@@ -49,27 +50,38 @@ class Account:
             raise ValueError("Account Type must be one of: 'Saving', 'Checking', 'Business', or 'Credit'")
 
     @property
-    def balance(self):
+    def balance(self) -> Union[int, float]:
         return self._balance
 
     @balance.setter
-    def balance(self, balance):
+    def balance(self, balance: Union[int, float]) -> None:
         if isinstance(balance, (int, float)):
             self._balance = balance
         else:
             raise ValueError("Balance must be a number")
 
     @property
-    def payment_history(self):
+    def payment_history(self) -> List[Dict]:
         return self._payment_history
 
     @payment_history.setter
-    def payment_history(self, payment_history):
+    def payment_history(self, payment_history: List[Dict]) -> None:
         if isinstance(payment_history, list):
             self._payment_history = payment_history
         else:
             raise ValueError("Payment History must be a list")
 
+    @property
+    def client(self) -> Client:
+        return self._client
 
+    @client.setter
+    def client(self, client: Client) -> None:
+        if isinstance(client, Client):
+            self._client = client
+        else:
+            raise ValueError("Client must be an instance of the Client class")
+
+        
     def __repr__(self):
         return f'<Account account_number={self.account_number} account_type={self.account_type} client={self.client}>'
