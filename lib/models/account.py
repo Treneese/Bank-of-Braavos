@@ -1,4 +1,5 @@
 # lib/models/account.py
+from models.__init__ import CURSOR, CONN
 from typing import List, Union, Dict
 from .client import Client
 
@@ -82,7 +83,89 @@ class Account:
             self._client = client
         else:
             raise ValueError("Client must be an instance of the Client class")
-
         
+    def save(self):
+        """ Insert a new row with the values of the current account object.
+        Update object id attribute using the primary key value of new row.
+        Save the object in local dictionary using table row's PK as dictionary key"""
+        sql = """
+                INSERT INTO accounts (account_number, routing_number, account_type, balance)
+                VALUES (?, ?, ?, ?)
+        """
+
+        CURSOR.execute(sql, (self.account_number, self.routing_number, self.account_type, self.balance))
+        CONN.commit()
+
+        self.id = CURSOR.lastrowid
+        type(self).all[self.id] = self
+    
+    @classmethod
+    def create(cls, account_number, routing_number, account_type, balance):
+        """Create a new accountt instance and save it to the database."""
+        account = cls(account_number, routing_number, account_type, balance)
+        account.save()
+        return account
+        
+    def delete(self):
+        """Delete the table row corresponding to the current Account instance,
+        delete the dictionary entry, and reassign id attribute"""
+        sql = """
+            DELETE FROM accounts
+            WHERE id = ?
+        """
+    
+        CURSOR.execute(sql, (self.id,))
+        CONN.commit()
+    
+        # Delete the dictionary entry using id as the key
+        del type(self).all[self.id]
+
+        #Set the id to none 
+        self.id = None
+
+    @classmethod
+    def instance_from_db(cls, row):
+        """Return a Account object having the attribute values from the table row."""
+
+        # Check for existing instance using the primary key
+        account = cls.all.get(row[0])
+        if account:
+            # ensure attributes match row values in case instance was modified
+            account.account_number = row[1]
+            account.routing_number = row[2]
+            account.account_type = row[3]
+            account.balance = row[4]
+        else:
+            # not in dictionary, create new instance and add to dictionary
+            account = cls(row[1], row[2], row[3], row[4])
+            account.id = row[0]
+            cls.all[account.id] = account
+        return account
+
+    @classmethod
+    def get_all(cls):
+        """Return a list containing one Account object per table row"""
+        sql = """
+            SELECT *
+            FROM accounts
+        """
+
+        rows = CURSOR.execute(sql).fetchall()
+
+        return [cls.instance_from_db(row) for row in rows]
+        
+    @classmethod
+    def find_by_id(cls, id):
+        """Return account object corresponding to the table row matching the key"""
+        sql = """
+            SELECT *
+            FROM accounts
+            WHERE id = ?
+        """
+
+        row = CURSOR.execute(sql, (id,)).fetchone()
+        return cls.instance_from_db(row) if row else None
+
+
     def __repr__(self):
         return f'<Account account_number={self.account_number} account_type={self.account_type} client={self.client}>'
