@@ -11,3 +11,5 @@ CREATE TABLE Clients (
     UNIQUE (id_number),
     CHECK (credit_score BETWEEN 300 AND 850)
 );
+
+INSERT INTO clients (name, address, DOB, id_numbe, email, income, credit_score, hashed_ssn, id_number,) VALUES

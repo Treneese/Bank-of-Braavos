@@ -6,12 +6,13 @@ class Account:
 
     all = {}
 
-    def __init__(self, account_number, routing_number, account_type, balance, payment_history):
+    def __init__(self, account_number, routing_number, account_type, balance, payment_history, client):
         self.account_number = account_number
         self.routing_number = routing_number
         self.account_type = account_type
         self.balance = balance
         self.payment_history = payment_history
+        self.client = client
         Account.all[account_number] = self
 
     @property
@@ -68,3 +69,7 @@ class Account:
             self._payment_history = payment_history
         else:
             raise ValueError("Payment History must be a list")
+
+
+    def __repr__(self):
+        return f'<Account account_number={self.account_number} account_type={self.account_type} client={self.client}>'

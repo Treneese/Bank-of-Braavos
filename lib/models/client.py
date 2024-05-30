@@ -1,11 +1,15 @@
 # lib/models/client.py
 import bcrypt
+from models.account import Account
+from models.__init__ import CURSOR, CONN
+
+
 
 class Client:
 
     all = {}
 
-    def __init__(self, name, address, DOB, id_number, email, income, education, credit_score,  id=None):
+    def __init__(self, name, address, DOB, id_number, email, income, credit_score,  id=None):
         self.id = id
         self.name = name
         self.address = address
@@ -13,7 +17,6 @@ class Client:
         self.id_number = id_number
         self.email = email
         self.income = income
-        # self.education = education
         self.credit_score = credit_score
 
     @property
@@ -158,3 +161,10 @@ class Client:
             print("It Matches!")
         else:
             print("It Does not Match :(")
+
+    @property
+    def accounts(self):
+        return [account for account in Account.all if account.client == self]  
+
+    def __repr__(self):
+        return f'<Client name={self.name} >'
