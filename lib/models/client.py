@@ -2,8 +2,7 @@
 from .__init__ import CURSOR, CONN
 import bcrypt
 import re
-import ipdb
-from account import Account
+from .account import Account
 
 class Client:
 
