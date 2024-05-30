@@ -86,3 +86,152 @@ class Account:
         
     def __repr__(self):
         return f'<Account account_number={self.account_number} account_type={self.account_type} client={self.client}>'
+    
+    @classmethod
+    def create_table(cls):
+        """ Create a new table to persist the attributes of Account instances """
+        sql = """
+             account_number BIGINT PRIMARY KEY,
+            routing_number BIGINT NOT NULL,
+            account_type VARCHAR(20) NOT NULL CHECK (account_type IN ('Saving', 'Checking', 'Business', 'Credit')),
+            balance DECIMAL(15, 2) NOT NULL
+            client TEXT NOT NULL,
+            FOREIGN KEY (client) REFERENCES Clients (name)
+
+       
+       
+        """
+        CURSOR.execute(sql)
+        CONN.commit()
+
+    @classmethod
+    def drop_table(cls):
+        """ Drop the table that persists Account instances """
+        sql = """
+            DROP TABLE IF EXISTS accounts;
+        """
+        CURSOR.execute(sql)
+        CONN.commit()
+
+    def save(self):
+        """ Insert a new row with the account_number, routing_number, account_type, balance, payment_history, and client values of the current Account instance.
+        Update object id attribute using the primary key value of new row.
+        Save the object in local dictionary using table row's PK as dictionary key"""
+        sql = """
+            INSERT INTO departments (account_number, routing_number, account_type, balance, payment_history, client)
+            VALUES (?, ?)
+        """
+
+        CURSOR.execute(sql, (self.account_number, self.routing_number, self.account_type, self.balance, self.payment_history, self.client))
+        CONN.commit()
+
+        self.id = CURSOR.lastrowid
+        type(self).all[self.id] = self
+
+    @classmethod
+    def create(cls, account_number, routing_number, account_type, balance, payment_history, client):
+        """ Initialize a new Account instance and save the object to the database """
+        account = cls(account_number, routing_number, account_type, balance, payment_history, client)
+        account.save()
+        return account
+
+    def update(self):
+        """Update the table row corresponding to the current Account instance."""
+        sql = """
+            UPDATE accounts
+            SET account_number = ?, routing_number = ?, account_type = ?, balance = ?, payment_history = ?, client = ?
+            WHERE id = ?
+        """
+        CURSOR.execute(sql, (self.account_number, self.routing_number, self.account_type, self.balance, self.payment_history, self.client))
+        CONN.commit()
+
+    def delete(self):
+        """Delete the table row corresponding to the current Account instance,
+        delete the dictionary entry, and reassign account attribute"""
+
+        sql = """
+            DELETE FROM accounts
+            WHERE id = ?
+        """
+
+        CURSOR.execute(sql, (self.id,))
+        CONN.commit()
+
+        # Delete the dictionary entry using id as the key
+        del type(self).all[self.id]
+
+        # Set the account to None
+        self.account = None
+
+    @classmethod
+    def instance_from_db(cls, row):
+        """Return a Account object having the attribute values from the table row."""
+
+        # Check the dictionary for an existing instance using the row's primary key
+        account = cls.all.get(row[0])
+        if department:
+            # ensure attributes match row values in case local instance was modified
+            account.account_number = row[1]
+            account.routing_number = row[2]
+            account.account_type = row[3]
+            account.balance = row[4]
+            account.payment_history = row[5]
+            account.client = row[6]
+        else:
+            # not in dictionary, create new instance and add to dictionary
+            account = cls(row[1], row[2], row[3], row[4], row[5], row[6])
+            account.id = row[0]
+            cls.all[account.id] = account
+        return account
+
+
+
+    @classmethod
+    def get_all(cls):
+            """Return a list containing a Acoount object per row in the table"""
+            sql = """
+                SELECT *
+                FROM accounts
+            """
+
+            rows = CURSOR.execute(sql).fetchall()
+
+            return [cls.instance_from_db(row) for row in rows]
+
+    @classmethod
+    def find_by_account_number(cls, account_number):
+        """Return a Account object corresponding to the table row matching the specified primary key"""
+        sql = """
+            SELECT *
+            FROM accounts
+            WHERE account_number = ?
+        """
+
+        row = CURSOR.execute(sql, (account_number,)).fetchone()
+        return cls.instance_from_db(row) if row else None
+
+    @classmethod
+    def find_by_client(cls, client):
+        """Return a Account object corresponding to first table row matching specified client"""
+        sql = """
+            SELECT *
+            FROM accounts
+            WHERE client is ?
+        """
+
+        row = CURSOR.execute(sql, (client,)).fetchone()
+        return cls.instance_from_db(row) if row else None
+
+    def clients(self):
+        """Return list of clients associated with current accounts"""
+        from client import Client
+        sql = """
+            SELECT * FROM clients
+            WHERE account_id = ?
+        """
+        CURSOR.execute(sql, (self.id,),)
+
+        rows = CURSOR.fetchall()
+        return [
+            Client.instance_from_db(row) for row in rows
+        ]
