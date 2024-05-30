@@ -54,6 +54,40 @@ def find_account_by_acc_number():
     else: 
         print(f"\nAccount {id_} not found")
 
+def log_in():
+    id_ = input("Enter the Client ID number: ")
+    password = input("Enter client password")
+    client = Client.find_by_id(id_)
+    if client:
+        print(f"\nWelcome, back {Client.name}!")
+              
+
+
+def deposit_account():
+    id_ = input("Enter the account number: ")
+    account = Account.find_by_id(id_)
+    if account:
+        amount = float(input("Enter amount to be deposited: "))
+        account.balance += amount
+        print("\n Amount Deposited:", amount)
+        print(f"\n Current balance: {account.balance}")
+    else: 
+        print(f"\nError: Invalid entry- account not found")
+
+def withdraw_account():
+    id_ = input("Enter the account number: ")
+    account = Account.find_by_id(id_)
+    if account:
+        print(f"\n Current balance: {account.balance}")
+        amount = float(input("Enter amount to be withdrawn: "))
+        if account.balance >= amount:
+            account.balance -= amount
+            print("\n You Withdrew:", amount)
+        else:
+            print("\n Insufficient balance  ")
+    else: 
+        print("\nError: account not found")
+
 def find_client_by_id():
     id_ = input("Enter the Client ID number: ")
     client = Client.find_by_id(id_)
@@ -63,7 +97,7 @@ def find_client_by_id():
         print(f"\nAccount {id_} not found")
 
 def view_client_accounts():
-    client_id = input("Enter the client's id: ")
+    client_id = input("Enter your client id: ")
     client_object = Client.find_by_id(client_id)
     if client_object:
         accounts = client_object.find_all_accs()
@@ -75,6 +109,13 @@ def view_client_accounts():
             print("Error finding Account: ", exc)
     else :
         print(f"\nClient id of {client_id} not found")
+
+
+
+
+
+
+        
 
 def delete_account():
     account_ids = [account.account_number for account in Account.get_all()]

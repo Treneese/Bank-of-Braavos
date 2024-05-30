@@ -10,6 +10,9 @@ from helpers import (
     view_client_accounts,
     delete_account,
     delete_client,
+    deposit_account,
+    withdraw_account,
+    log_in,
 
 )
 def show_menu():
@@ -25,7 +28,8 @@ def main():
         if choice == "0":
             exit_program()
         elif choice == "1":
-            log_in_menu()
+            log_in()
+            logged_in_menu()
         elif choice == "2":
             add_menu()
         else:
@@ -38,14 +42,6 @@ def menu():
     print("1. Log in to your account")
     print("2. Register new account")
 
-
-def log_in_menu():
-    while True:
-        username = input("Input account number: ")
-        password = input("Input password: ")
-        choice = input("> ")
-        if choice == "0":
-            exit_program()  
 
         
                            
@@ -63,6 +59,8 @@ def logged_in_menu():
             deposit_menu()
         elif choice == "4":
             delete_menu()
+        elif choice == "5":
+            main()
         else:
             print("\nInvalid choice")
 
@@ -75,6 +73,7 @@ def logged_in_menu_options():
     print("2. View your accounts")
     print("3. Withdraw/deposit funds")
     print("4. Delete account/ End your business with us")
+    print("5. log out of your account")
 
 def add_menu():
     while True:
@@ -92,6 +91,7 @@ def add_menu():
             add_menu()
         else:
             print("Invalid choice")
+            add_menu()
 
 def create_menu_options():
     print("\n-Now in Register Menu-")
@@ -113,8 +113,6 @@ def view_menu():
             find_client_by_id()
         elif choice == "3":
             view_client_accounts()
-        elif choice == "4":
-            find_account_by_acc_number()
         else:
             print("Invalid choice")
         view_menu()
@@ -126,7 +124,6 @@ def view_menu_options():
     print("1. Return to Main Menu")
     print("2. Find account by id")
     print("3. View your accounts")
-    print("4. Find account by Account #")
     
 def deposit_menu():
     while True:
@@ -137,9 +134,11 @@ def deposit_menu():
         elif choice == "1":
             main()
         elif choice == "2":
-            deposit_account()     
+            deposit_account()
+            deposit_menu()    
         elif choice == "3":
             withdraw_account()
+            deposit_menu()
         else :
             print("Invalid choice")
 
@@ -147,7 +146,7 @@ def deposit_menu_options():
     print("\n-Now in Deposit/Withdraw Menu-")
     print("Please select an option:")
     print("0. Exit Program")
-    print("1. Return to Main Menu")
+    print("1. Log out/ Return to main menu")
     print("2. Deposit into Account")
     print("3. Withdraw from Account")
 

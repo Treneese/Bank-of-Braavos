@@ -1,17 +1,21 @@
-
+# lib/models/account.py
+from typing import List, Union, Dict
+from .client import Client
 
 class Account:
 
     ALLOWED_ACCOUNT_TYPES = ["Saving", "Checking", "Business", "Credit"]
 
-    all = {}
+    all: Dict[int, "Account"] = {}
 
-    def __init__(self, account_number, routing_number, account_type, payment_history, balance = 0):
+    def __init__(self, account_number: int, routing_number: int, account_type: str, balance: Union[int, float], payment_history: List[Dict], client: Client):
         self.account_number = account_number
         self.routing_number = routing_number
         self.account_type = account_type
         self.balance = balance
         self.payment_history = payment_history
+        self.client = client
+        Account.all[account_number] = self
 
     @property
     def account_number(self):
@@ -22,11 +26,8 @@ class Account:
         if isinstance(account_number, int) and 12 <= len(str(account_number)) <= 17:
             self._account_number = account_number
         else:
-            raise ValueError(
-                "Account Number must be an Integer between 12 and 17 digits"
-            )
+            raise ValueError("Account Number must be an integer between 12 and 17 digits")
 
-        
     @property
     def routing_number(self):
         return self._routing_number
@@ -36,10 +37,8 @@ class Account:
         if isinstance(routing_number, int) and len(str(routing_number)) == 9:
             self._routing_number = routing_number
         else:
-            raise ValueError(
-                "Routing Number must be an Integer of 9 digits"
-            )
-        
+            raise ValueError("Routing Number must be an integer of 9 digits")
+
     @property
     def account_type(self):
         return self._account_type
@@ -49,33 +48,41 @@ class Account:
         if isinstance(account_type, str) and account_type in self.ALLOWED_ACCOUNT_TYPES:
             self._account_type = account_type
         else:
-            raise ValueError(
-                "Account Type must be (Saving, Checkings, Business or Credit)"
-            )
-        
+            raise ValueError("Account Type must be one of: 'Saving', 'Checking', 'Business', or 'Credit'")
+
     @property
-    def balance(self):
+    def balance(self) -> Union[int, float]:
         return self._balance
 
     @balance.setter
-    def balance(self, balance):
-        if isinstance(balance, int):
-            self.balance= balance
+    def balance(self, balance: Union[int, float]) -> None:
+        if isinstance(balance, (int, float)):
+            self._balance = balance
         else:
-            raise ValueError(
-                "Balance must be an Interger"
-            )
-        
+            raise ValueError("Balance must be a number")
+
     @property
-    def payment_history(self):
+    def payment_history(self) -> List[Dict]:
         return self._payment_history
 
     @payment_history.setter
-    def payment_history(self, payment_history):
-        # Example validation: checking if payment_history is a list
+    def payment_history(self, payment_history: List[Dict]) -> None:
         if isinstance(payment_history, list):
             self._payment_history = payment_history
         else:
-            raise ValueError(
-                "Payment History must be a list"
-            )
+            raise ValueError("Payment History must be a list")
+
+    @property
+    def client(self) -> Client:
+        return self._client
+
+    @client.setter
+    def client(self, client: Client) -> None:
+        if isinstance(client, Client):
+            self._client = client
+        else:
+            raise ValueError("Client must be an instance of the Client class")
+
+        
+    def __repr__(self):
+        return f'<Account account_number={self.account_number} account_type={self.account_type} client={self.client}>'
