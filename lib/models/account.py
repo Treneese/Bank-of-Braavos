@@ -1,5 +1,6 @@
 # lib/models/account.py
 from typing import List, Union, Dict
+from .client import Client
 
 class Account:
 

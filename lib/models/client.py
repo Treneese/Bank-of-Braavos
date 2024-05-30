@@ -8,9 +8,12 @@ from typing import List, Union, Dict
 
 class Client:
     all: Dict[int, "Client"] = {}
+    _id_counter = 1 
 
     def __init__(self, name: str, address: str, DOB: int, id_number: str, email: str, income: Union[int, float], credit_score: int, id: int = None):
-        self.id = id
+        self.id = id or Client._id_counter
+        if id is None:
+            Client._id_counter += 1
         self.name = name
         self.address = address
         self.DOB = DOB

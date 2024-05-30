@@ -1,3 +1,4 @@
-SELECT * FROM accounts
-JOIN clients ON accounts.client.id = client.id
-WHERE client.id = 1;
+SELECT * 
+FROM Accounts
+JOIN Clients ON Accounts.client = Clients.id
+WHERE Clients.id = 1;
