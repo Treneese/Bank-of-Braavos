@@ -87,15 +87,16 @@ class Account:
     def create_table(cls):
         """ Create a new table to persist the attributes of Account instances """
         sql = """
-            account_number BIGINT PRIMARY KEY,
-            routing_number BIGINT NOT NULL,
-            account_type VARCHAR(20) NOT NULL CHECK (account_type IN ('Saving', 'Checking', 'Business', 'Credit')),
-            balance DECIMAL(15, 2) NOT NULL
-            client TEXT NOT NULL,
-            FOREIGN KEY (client) REFERENCES Clients (name)
-
-       
-       
+            CREATE TABLE IF NOT EXISTS accounts (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                account_number BIGINT NOT NULL,
+                routing_number BIGINT NOT NULL,
+                account_type VARCHAR(20) NOT NULL CHECK (account_type IN ('Saving', 'Checking', 'Business', 'Credit')),
+                balance DECIMAL(15, 2) NOT NULL,
+                payment_history TEXT,
+                client TEXT NOT NULL,
+                FOREIGN KEY (client) REFERENCES clients(name)
+            )
         """
         CURSOR.execute(sql)
         CONN.commit()
@@ -114,13 +115,11 @@ class Account:
         Update object id attribute using the primary key value of new row.
         Save the object in local dictionary using table row's PK as dictionary key"""
         sql = """
-            INSERT INTO departments (account_number, routing_number, account_type, balance, payment_history, client)
-            VALUES (?, ?)
+            INSERT INTO accounts (account_number, routing_number, account_type, balance, payment_history, client)
+            VALUES (?, ?, ?, ?, ?, ?)
         """
-
         CURSOR.execute(sql, (self.account_number, self.routing_number, self.account_type, self.balance, self.payment_history, self.client))
         CONN.commit()
-
         self.id = CURSOR.lastrowid
         type(self).all[self.id] = self
     
@@ -149,17 +148,12 @@ class Account:
             DELETE FROM accounts
             WHERE id = ?
         """
-    
         CURSOR.execute(sql, (self.id,))
         CONN.commit()
-    
-        # Delete the dictionary entry using id as the key
         del type(self).all[self.id]
+        self.id = None
 
-        # Set the account to None
-        self.account = None
 
-    @classmethod
     @classmethod
     def instance_from_db(cls, row):
         """Return a Account object having the attribute values from the table row."""

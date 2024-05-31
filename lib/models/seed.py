@@ -5,36 +5,38 @@ from models.account import Account
 
 initialize_db()
 
+Arya = Client( name="arya stark", address= "123 main", DOB= 19981915, email="arya.stark@gmail.com", ssn= "123452232", income=84039, credit_score= "770")
+
 
 clients_data = [
     {
-        "name": "John Doe",
+        "name": "Arya Stark",
         "address": "123 Main St",
         "DOB": 19850101,
         "id_number": "1234567890",
-        "email": "john.doe@example.com",
+        "email": "arya.stark@example.com",
         "ssn": "123-45-6789",
         "income": 55000,
         "credit_score": 700
     },
     {
-        "name": "Jane Smith",
+        "name": "John Snow",
         "address": "456 Elm St",
         "DOB": 19900202,
         "id_number": "0987654321",
-        "email": "jane.smith@example.com",
+        "email": "john.snow@example.com",
         "ssn": "987-65-4321",
         "income": 62000,
         "credit_score": 720
     },
     {
-        "name": "Alice Johnson",
+        "name": "Tyrion Lannister",
         "address": "789 Oak St",
         "DOB": 19751215,
         "id_number": "1122334455",
-        "email": "alice.johnson@example.com",
+        "email": "tyrion.lannister@example.com",
         "ssn": "112-23-3445",
-        "income": 75000,
+        "income": 175000,
         "credit_score": 680
     }
 ]
@@ -42,6 +44,7 @@ clients_data = [
 
 for data in clients_data:
     client = Client(**data)
+    Arya.save()
     client.save()
     print(f"Inserted {client}")
 

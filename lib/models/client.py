@@ -168,22 +168,23 @@ class Client:
     def accounts(self) -> List["Account"]:
         return [account for account in Account.all.values() if account.client == self]
     
-
+    @classmethod
     def create_table(cls):
         """ Create a new table to persist the attributes of Client instances """
         sql = """
-              CREATE TABLE IF NOT EXISTS clients (
-              id INTEGER PRIMARY KEY AUTOINCREMENT,
-              name TEXT NOT NULL,
-              address TEXT NOT NULL,
-              DOB INTEGER NOT NULL,
-              id_number TEXT NOT NULL,
-              email TEXT NOT NULL,
-              income REAL NOT NULL,
-              credit_score INTEGER NOT NULL,
-              hashed_ssn TEXT,
-              UNIQUE (id_number),
-              CHECK (credit_score BETWEEN 300 AND 850)
+            CREATE TABLE IF NOT EXISTS clients (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            address TEXT NOT NULL,
+            DOB INTEGER NOT NULL,
+            id_number TEXT NOT NULL,
+            email TEXT NOT NULL,
+            income REAL NOT NULL,
+            credit_score INTEGER NOT NULL,
+            hashed_ssn TEXT,
+            UNIQUE (id_number),
+            CHECK (credit_score BETWEEN 300 AND 850)
+            );
         """
         CURSOR.execute(sql)
         CONN.commit()
