@@ -1,4 +1,4 @@
-CREATE TABLE Accounts (
+CREATE TABLE accounts (
     account_number BIGINT PRIMARY KEY,
     routing_number BIGINT NOT NULL,
     account_type VARCHAR(20) NOT NULL CHECK (account_type IN ('Saving', 'Checking', 'Business', 'Credit')),

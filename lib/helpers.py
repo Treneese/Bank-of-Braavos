@@ -16,10 +16,13 @@ def add_client():
         client = input("User name: ")
         address = input("Place of residence: ")
         dob = input("Enter date of birth in the format YYYYMMDD: ")
+        id_number = str(random_with_N_digits(10))
         email = input("Enter email address: ")
         income = input("Enter yearly gross income: ")
         credit_score = input("Enter your credit score: ")
-        Client.create(client, address, dob, email, income, credit_score)
+        ssn = input("Enter social security number: ")
+        
+        Client.create(client, address, dob, id_number, email, ssn, income, credit_score)
         print(f"\nClient {Client} added sucessfully.")
     except Exception as exc:
         print(f"\nError: {exc}")
@@ -48,7 +51,7 @@ def view_accounts():
 
 def find_account_by_acc_number():
     id_ = input("Enter the account number: ")
-    account = Account.find_by_id(id_)
+    account = Account.find_by_id_number(id_)
     if account:
         print(f"\nAccount Found: -{account.account_number}- Type: {account.account_type}")
     else: 
@@ -57,7 +60,7 @@ def find_account_by_acc_number():
 def log_in():
     id_ = input("Enter the Client ID number: ")
     password = input("Enter client password")
-    client = Client.find_by_id(id_)
+    client = Client.find_by_id_number(id_)
     if client:
         print(f"\nWelcome, back {Client.name}!")
               
@@ -65,7 +68,7 @@ def log_in():
 
 def deposit_account():
     id_ = input("Enter the account number: ")
-    account = Account.find_by_id(id_)
+    account = Account.find_by_id_number(id_)
     if account:
         amount = float(input("Enter amount to be deposited: "))
         account.balance += amount
@@ -76,7 +79,7 @@ def deposit_account():
 
 def withdraw_account():
     id_ = input("Enter the account number: ")
-    account = Account.find_by_id(id_)
+    account = Account.find_by_id_number(id_)
     if account:
         print(f"\n Current balance: {account.balance}")
         amount = float(input("Enter amount to be withdrawn: "))
@@ -90,7 +93,7 @@ def withdraw_account():
 
 def find_client_by_id():
     id_ = input("Enter the Client ID number: ")
-    client = Client.find_by_id(id_)
+    client = Client.find_by_id_number(id_)
     if client:
         print(f"\nAccount Found: -{client.name}- DOB: {client.DOB}")
     else: 
@@ -98,7 +101,7 @@ def find_client_by_id():
 
 def view_client_accounts():
     client_id = input("Enter your client id: ")
-    client_object = Client.find_by_id(client_id)
+    client_object = Client.find_by_id_number(client_id)
     if client_object:
         accounts = client_object.find_all_accs()
         if not accounts: print(f"\nClient {client_object.name} has no accounts yet")
@@ -135,7 +138,7 @@ def delete_client():
         while client_id not in [str(object.id) for object in Client.get_all()]:
             print("Client id is not in list")
             client_id = input(f"To delete a client, select a client id from this list {client_ids}: ")
-        selected_client = Client.find_by_id(client_id)
+        selected_client = Client.find_by_id_number(client_id)
         print(f"\nYou deleted {selected_client.name} and all their accounts")
         client_accounts = [account for account in Account.get_all()]
         for account in client_accounts:

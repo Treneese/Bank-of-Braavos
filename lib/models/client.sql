@@ -1,4 +1,4 @@
-CREATE TABLE Clients (
+CREATE TABLE clients (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     address TEXT NOT NULL,
@@ -12,7 +12,7 @@ CREATE TABLE Clients (
     CHECK (credit_score BETWEEN 300 AND 850)
 );
 
-INSERT INTO clients (name, address, DOB, id_numbe, email, income, credit_score, hashed_ssn, id_number,) VALUES
+INSERT INTO clients (name, address, DOB, id_number, email, income, credit_score, hashed_ssn,) VALUES
 ('John Doe', '123 Main St', 19800101, 'ID123456', 'john.doe@example.com', 75000.00, 720, 'hashed_ssn_value'),
 ('Jane Smith', '456 Elm St', 19900202, 'ID654321', 'jane.smith@example.com', 82000.00, 680, 'hashed_ssn_value'),
 ('Emily Johnson', '789 Maple St', 19750315, 'ID789012', 'emily.johnson@example.com', 90000.00, 750, 'hashed_ssn_value');

@@ -1,15 +1,14 @@
 # lib/models/account.py
 from models.__init__ import CURSOR, CONN
 from typing import List, Union, Dict
-from .client import Client
+#from .client import Client
 
 class Account:
-
     ALLOWED_ACCOUNT_TYPES = ["Saving", "Checking", "Business", "Credit"]
 
     all: Dict[int, "Account"] = {}
 
-    def __init__(self, account_number: int, routing_number: int, account_type: str, balance: Union[int, float], payment_history: List[Dict], client: Client):
+    def __init__(self, account_number: int, routing_number: int, account_type: str, balance: Union[int, float], payment_history: List[Dict], client):
         self.account_number = account_number
         self.routing_number = routing_number
         self.account_type = account_type
@@ -73,22 +72,22 @@ class Account:
         else:
             raise ValueError("Payment History must be a list")
 
-    @property
-    def client(self) -> Client:
-        return self._client
+#    @property
+#   def client(self) -> Client:
+#        return self._client
 
-    @client.setter
-    def client(self, client: Client) -> None:
-        if isinstance(client, Client):
-            self._client = client
-        else:
-            raise ValueError("Client must be an instance of the Client class")
+#    @client.setter
+#    def client(self, client: Client) -> None:
+#        if isinstance(client, Client):
+#            self._client = client
+#        else:
+#            raise ValueError("Client must be an instance of the Client class")
         
     @classmethod
     def create_table(cls):
         """ Create a new table to persist the attributes of Account instances """
         sql = """
-             account_number BIGINT PRIMARY KEY,
+            account_number BIGINT PRIMARY KEY,
             routing_number BIGINT NOT NULL,
             account_type VARCHAR(20) NOT NULL CHECK (account_type IN ('Saving', 'Checking', 'Business', 'Credit')),
             balance DECIMAL(15, 2) NOT NULL

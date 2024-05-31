@@ -4,13 +4,14 @@ import bcrypt
 import re
 from models.account import Account
 from typing import List, Union, Dict
+from models.db import CURSOR, CONN 
 
 class Client:
 
     all: Dict[int, "Client"] = {}
     _id_counter = 1 
 
-    def __init__(self, name: str, address: str, DOB: int, id_number: str, email: str, ssn: int, income: Union[int, float], credit_score: int, id: int = None):
+    def __init__(self, name: str, address: str, DOB: int, id_number: str, email: str, ssn: int, income: int, credit_score: int, id: int = None):
         self.id = id or Client._id_counter
         if id is None:
             Client._id_counter += 1
@@ -33,7 +34,7 @@ class Client:
         if isinstance(name, str) and name.strip():
             self._name = name
         else:
-            raise ValueError("Name must be a non-empty string")
+            raise ValueError(f"Name must be a non-empty string: {name}")
         
     @property
     def address(self) -> str:
@@ -48,7 +49,7 @@ class Client:
         if isinstance(address, str) and self.is_valid_address(address):
             self._address = address
         else:
-            raise ValueError("Invalid street address")
+            raise ValueError(f"Invalid street address: {address}")
 
     @property
     def DOB(self) -> int:
@@ -74,7 +75,7 @@ class Client:
         if self.is_valid_DOB(DOB):
             self._DOB = DOB
         else:
-            raise ValueError("Date of Birth must be an integer in the format YYYYMMDD")
+            raise ValueError(f"Date of Birth must be an integer in the format YYYYMMDD: {DOB}")
 
     @property
     def id_number(self) -> str:
@@ -89,7 +90,7 @@ class Client:
         if self.is_valid_id_number(id_number):
             self._id_number = id_number
         else:
-            raise ValueError("ID Number must be a string of exactly 10 digits")
+            raise ValueError(f"ID Number must be a string of exactly 10 digits: {id_number}")
    
     @property
     def email(self) -> str:
@@ -105,7 +106,7 @@ class Client:
         if isinstance(email, str) and self.is_valid_email(email):
             self._email = email
         else:
-            raise ValueError("Invalid email address")
+            raise ValueError(f"Invalid email address: {email}")
 
 
     @property
@@ -113,15 +114,16 @@ class Client:
         return self._income
 
     @staticmethod
-    def is_valid_income(income: Union[int, float]) -> bool:
-        return isinstance(income, (int, float)) and income >= 0
+    def is_valid_income(income: int) -> bool:
+        return isinstance(income, int)
 
     @income.setter
-    def income(self, income: Union[int, float]) -> None:
-        if self.is_valid_income(income):
-            self._income = income
-        else:
-            raise ValueError("Income must be a non-negative number")
+    def income(self, income: int) -> None:
+       # if self.is_valid_income(income):
+        self._income = income
+        #else:
+         #   print(f"\nincome: {income}")
+         #   raise ValueError("Income must be a non-negative number")
 
     @property
     def credit_score(self) -> int:
@@ -129,16 +131,16 @@ class Client:
 
     @credit_score.setter
     def credit_score(self, value: int) -> None:
-        if 300 <= value <= 850:
+        if "300" <= value <= "850":
             self._credit_score = value
         else:
-            raise ValueError("Credit score must be between 300 and 850")
+            raise ValueError(f"Credit score must be between 300 and 850:")
 
 
     @property
     def last_four(self) -> str:
-        if self._hashed_ssn:
-            return self._hashed_ssn[-4:]
+        if self.ssn:
+            return self.ssn[-4:]
         return None
 
     @property
@@ -166,24 +168,22 @@ class Client:
     def accounts(self) -> List["Account"]:
         return [account for account in Account.all.values() if account.client == self]
     
-    def __repr__(self) -> str:
-        return f'<Client name={self.name}>'
-
 
     def create_table(cls):
         """ Create a new table to persist the attributes of Client instances """
         sql = """
+              CREATE TABLE IF NOT EXISTS clients (
               id INTEGER PRIMARY KEY AUTOINCREMENT,
-                name TEXT NOT NULL,
-                address TEXT NOT NULL,
-                DOB INTEGER NOT NULL,
-                id_number TEXT NOT NULL,
-                email TEXT NOT NULL,
-                income REAL NOT NULL,
-                credit_score INTEGER NOT NULL,
-                hashed_ssn TEXT,
-                UNIQUE (id_number),
-                CHECK (credit_score BETWEEN 300 AND 850)
+              name TEXT NOT NULL,
+              address TEXT NOT NULL,
+              DOB INTEGER NOT NULL,
+              id_number TEXT NOT NULL,
+              email TEXT NOT NULL,
+              income REAL NOT NULL,
+              credit_score INTEGER NOT NULL,
+              hashed_ssn TEXT,
+              UNIQUE (id_number),
+              CHECK (credit_score BETWEEN 300 AND 850)
         """
         CURSOR.execute(sql)
         CONN.commit()
@@ -209,7 +209,7 @@ class Client:
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
 
-        CURSOR.execute(sql, (self.name, self.address, self.DOB, self. id_number, self.email, self.income, self.cred_score, self.id))
+        CURSOR.execute(sql, (self.name, self.address, self.DOB, self. id_number, self.email, self.income, self.credit_score, self.id))
         CONN.commit()
 
         self.id = CURSOR.lastrowid
@@ -323,3 +323,6 @@ class Client:
         try:
             return [account for account in Account.get_all() if account.client_id == self.id]
         except: Exception("No accounts found by client")
+
+    def __repr__(self) -> str:
+        return f'<Client name={self.name}>'
