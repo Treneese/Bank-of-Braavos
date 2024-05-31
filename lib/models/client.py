@@ -83,7 +83,7 @@ class Client:
 
     @staticmethod
     def is_valid_id_number(id_number: str) -> bool:
-        return isinstance(id_number, str) and id_number.isdigit() and len(id_number) == 10
+        return isinstance(id_number, str) and id_number.isdigit() and len(id_number) >= 7
 
     @id_number.setter
     def id_number(self, id_number: str) -> None:
@@ -131,10 +131,10 @@ class Client:
 
     @credit_score.setter
     def credit_score(self, value: int) -> None:
-        if "300" <= value <= "850":
+        #if int(300) <= value <= int(850):
             self._credit_score = value
-        else:
-            raise ValueError(f"Credit score must be between 300 and 850:")
+       # else:
+           # raise ValueError(f"Credit score must be between 300 and 850:")
 
 
     @property
@@ -183,8 +183,7 @@ class Client:
             credit_score INTEGER NOT NULL,
             hashed_ssn TEXT,
             UNIQUE (id_number),
-            CHECK (credit_score BETWEEN 300 AND 850)
-            );
+            CHECK (credit_score BETWEEN 300 AND 850));
         """
         CURSOR.execute(sql)
         CONN.commit()
@@ -206,7 +205,7 @@ class Client:
         Save the object in local dictionary using table row's PK as dictionary key"""
         
         sql = """
-                INSERT INTO clients (name, address, DOB, id_number, email, income, credit_score, id)
+                INSERT INTO clients (id, name, address, DOB, id_number, email, income, credit_score)
                 VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """
 
@@ -215,6 +214,14 @@ class Client:
 
         self.id = CURSOR.lastrowid
         type(self).all[self.id] = self
+    
+    # Creates and saves client to the database
+    @classmethod
+    def create(cls, name, address, DOB, id_number, email, income, credit_score, ssn):
+        """ Initialize a new Client instance and save the object to the database """
+        client = cls(name, address, DOB, id_number, email, income, credit_score, ssn)
+        client.save()
+        return client
 
     def update(self):
         """Update the table row corresponding to the current Client instance."""
@@ -226,13 +233,7 @@ class Client:
         CURSOR.execute(sql, (self.name, self.address, self.DOB, self.id_number, self.email, self.income, self.credit_score, self.ssn))
         CONN.commit()
 
-    #? Creates and saves client to the database
-    @classmethod
-    def create(cls, name, address, DOB, id_number, email, income, credit_score, ssn):
-        """ Initialize a new Client instance and save the object to the database """
-        client = cls(name, address, DOB, id_number, email, income, credit_score, ssn)
-        client.save()
-        return client
+
 
     #? Deletes client from database
     def delete(self):

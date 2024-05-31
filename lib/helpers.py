@@ -35,7 +35,8 @@ def add_account():
             account_type = input(f"Choose which account type you would like to open {Account.ALLOWED_ACCOUNT_TYPES}")
         acc_num = random_with_N_digits(12)
         routing_num = random_with_N_digits(9)
-        Account.create(acc_num, routing_num, account_type)
+        id_ = input("Verify account number: ")
+        Account.create(acc_num, routing_num, account_type, balance= 0, client = id_)
         print(f"\n{account_type} account created sucessfully.")
     except Exception as exc:
         print(f"\nError: {exc}")

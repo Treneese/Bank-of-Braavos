@@ -8,12 +8,12 @@ class Account:
 
     all: Dict[int, "Account"] = {}
 
-    def __init__(self, account_number: int, routing_number: int, account_type: str, balance: Union[int, float], payment_history: List[Dict], client):
+    def __init__(self, account_number: int, routing_number: int, account_type: str, balance: Union[int, float], client):
         self.account_number = account_number
         self.routing_number = routing_number
         self.account_type = account_type
         self.balance = balance
-        self.payment_history = payment_history
+        #self.payment_history = payment_history
         self.client = client
         Account.all[account_number] = self
 
@@ -95,7 +95,7 @@ class Account:
             balance DECIMAL(15, 2) NOT NULL,
             payment_history TEXT,
             client TEXT NOT NULL,
-            FOREIGN KEY (client) REFERENCES clients(name))
+            FOREIGN KEY (client) REFERENCES clients(name));
         """
         CURSOR.execute(sql)
         CONN.commit()
@@ -115,7 +115,7 @@ class Account:
         Save the object in local dictionary using table row's PK as dictionary key"""
         sql = """
             INSERT INTO accounts (account_number, routing_number, account_type, balance, payment_history, client)
-            VALUES (?, ?, ?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?, ?);
         """
         CURSOR.execute(sql, (self.account_number, self.routing_number, self.account_type, self.balance, self.payment_history, self.client))
         CONN.commit()
@@ -123,7 +123,7 @@ class Account:
         type(self).all[self.id] = self
     
     @classmethod
-    def create(cls, account_number, routing_number, account_type, balance):
+    def create(cls, account_number, routing_number, account_type, balance, client):
         """Create a new accountt instance and save it to the database."""
         account = cls(account_number, routing_number, account_type, balance)
         account.save()
@@ -212,9 +212,9 @@ class Account:
         row = CURSOR.execute(sql, (id,)).fetchone()
         return cls.instance_from_db(row) if row else None
 
-    #@classmethod
-    #def find_by_client(cls, client):
-    #    """Return a Account object corresponding to first table row matching specified client"""
+    @classmethod
+    def find_by_client(cls, client):
+        """Return a Account object corresponding to first table row matching specified client"""
         sql = """
             SELECT *
             FROM accounts
