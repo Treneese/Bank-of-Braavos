@@ -1,5 +1,4 @@
 # lib/cli.py
-from models.client import Client
 from helpers import (
     exit_program,
     add_client,
