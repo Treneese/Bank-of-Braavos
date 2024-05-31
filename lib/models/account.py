@@ -88,15 +88,14 @@ class Account:
         """ Create a new table to persist the attributes of Account instances """
         sql = """
             CREATE TABLE IF NOT EXISTS accounts (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                account_number BIGINT NOT NULL,
-                routing_number BIGINT NOT NULL,
-                account_type VARCHAR(20) NOT NULL CHECK (account_type IN ('Saving', 'Checking', 'Business', 'Credit')),
-                balance DECIMAL(15, 2) NOT NULL,
-                payment_history TEXT,
-                client TEXT NOT NULL,
-                FOREIGN KEY (client) REFERENCES clients(name)
-            )
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            account_number BIGINT NOT NULL,
+            routing_number BIGINT NOT NULL,
+            account_type VARCHAR(20) NOT NULL CHECK (account_type IN ('Saving', 'Checking', 'Business', 'Credit')),
+            balance DECIMAL(15, 2) NOT NULL,
+            payment_history TEXT,
+            client TEXT NOT NULL,
+            FOREIGN KEY (client) REFERENCES clients(name))
         """
         CURSOR.execute(sql)
         CONN.commit()
@@ -213,9 +212,9 @@ class Account:
         row = CURSOR.execute(sql, (id,)).fetchone()
         return cls.instance_from_db(row) if row else None
 
-    @classmethod
-    def find_by_client(cls, client):
-        """Return a Account object corresponding to first table row matching specified client"""
+    #@classmethod
+    #def find_by_client(cls, client):
+    #    """Return a Account object corresponding to first table row matching specified client"""
         sql = """
             SELECT *
             FROM accounts
